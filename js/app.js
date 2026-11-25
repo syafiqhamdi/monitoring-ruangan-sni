@@ -1,57 +1,62 @@
+
+// ==========================================
+// app.js - Inisialisasi Dashboard
+// ==========================================
+
 import { initTheme } from "./theme.js";
+
 import { initCharts } from "./chart.js";
 
 import {
-  updateStandardUI,
-  updateDecisionUI,
-  updateSensorIndicator
+  updateStandardUI
 } from "./sni.js";
 
 import {
   listenRealtime,
   listenAverage,
-  listenQoS
+  listenQoS,
+  refreshRoomEvaluation
 } from "./monitor.js";
 
+// ==========================================
+// Inisialisasi
+// ==========================================
+
 initTheme();
+
 initCharts();
 
-const roomSelect = document.getElementById("roomSelect");
-
-// Menyimpan nilai sensor terakhir
-let currentLux = 0;
-let currentDb = 0;
-
-// Tampilkan standar awal
-updateStandardUI(roomSelect.value);
-
-// Callback saat data realtime berubah
-listenRealtime(
-  () => roomSelect.value,
-  (lux, db) => {
-    currentLux = lux;
-    currentDb = db;
-  }
+const roomSelect = document.getElementById(
+  "roomSelect"
 );
 
+// ==========================================
+// Tampilkan standar awal
+// ==========================================
+
+updateStandardUI(roomSelect.value);
+
+// ==========================================
+// Listener Firebase
+// ==========================================
+
+listenRealtime(() => roomSelect.value);
+
 listenAverage();
+
 listenQoS();
 
-// Saat dropdown berubah
+// ==========================================
+// Perubahan pilihan ruangan
+// ==========================================
+
 roomSelect.addEventListener("change", () => {
 
   updateStandardUI(roomSelect.value);
 
-  updateSensorIndicator(
-    roomSelect.value,
-    currentLux,
-    currentDb
-  );
+  // Evaluasi hanya jika alat aktif
+  // dan data sensor masih valid.
 
-  updateDecisionUI(
-    roomSelect.value,
-    currentLux,
-    currentDb
-  );
+  refreshRoomEvaluation();
 
 });
