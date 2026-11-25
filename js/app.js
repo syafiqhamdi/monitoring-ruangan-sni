@@ -16,7 +16,7 @@ import {
   listenAverage,
   listenQoS,
   refreshRoomEvaluation
-} from "./monitor.js";
+} from "./monitor.js?v=2";
 
 // ==========================================
 // Inisialisasi
